@@ -1,1 +1,69 @@
+// caixa-da-lanchonete.js
+
+const CARDAPIO = [
+  { codigo: "cafe", descricao: "Café", valor: 3.0 },
+  { codigo: "chantily", descricao: "Chantily (extra do Café)", valor: 1.5 },
+  { codigo: "suco", descricao: "Suco Natural", valor: 6.2 },
+  { codigo: "sanduiche", descricao: "Sanduíche", valor: 6.5 },
+  { codigo: "queijo", descricao: "Queijo (extra do Sanduíche)", valor: 2.0 },
+  { codigo: "salgado", descricao: "Salgado", valor: 7.25 },
+];
+
+const COMBOS = [
+  { codigo: "combo1", itens: ["suco", "sanduiche"], valor: 9.5 },
+  { codigo: "combo2", itens: ["cafe", "sanduiche"], valor: 7.5 },
+];
+
+const DESCONTOS = {
+  dinheiro: 0.05,
+};
+
+const ACRESCIMOS = {
+  credito: 0.03,
+};
+
+function calcularValorDaCompra(itens, formaDePagamento) {
+  if (!itens.length) {
+    return "Não há itens no carrinho de compra!";
+  }
+
+  let total = 0;
+
+  for (const item of itens) {
+    const cardapioItem = CARDAPIO.find((cardapioItem) => cardapioItem.codigo === item);
+    if (!cardapioItem) {
+      return "Item inválido!";
+    }
+    total += cardapioItem.valor;
+  }
+
+  const combo = COMBOS.find((combo) => itens.includes(combo.codigo));
+  if (combo) {
+    total = combo.valor;
+  }
+
+  for (const item of itens) {
+    const cardapioItem = CARDAPIO.find((cardapioItem) => cardapioItem.codigo === item);
+    if (cardapioItem.descricao.includes("extra")) {
+      const itemPrincipalCodigo = cardapioItem.descricao.split(" (extra")[0];
+      if (!itens.includes(itemPrincipalCodigo)) {
+        return "Item extra não pode ser pedido sem o principal";
+      }
+    }
+  }
+
+  if (formaDePagamento in DESCONTOS) {
+    total *= 1 - DESCONTOS[formaDePagamento];
+  } else if (formaDePagamento in ACRESCIMOS) {
+    total *= 1 + ACRESCIMOS[formaDePagamento];
+  } else {
+    return "Forma de pagamento inválida!";
+  }
+
+  return total.toFixed(2);
+}
+
+module.exports = {
+  calcularValorDaCompra,
+};
 
